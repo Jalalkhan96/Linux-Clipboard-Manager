@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Clipboard History
+Comment=Linux Clipboard History Manager (Win+V)
+Exec=/media/jalalkhan/01DBF96DB53A9B30/linuxfiles/clipboard/.venv/bin/python /media/jalalkhan/01DBF96DB53A9B30/linuxfiles/clipboard/main.py
+Icon=edit-paste
+Terminal=false
+Categories=Utility;
+StartupNotify=false
+X-GNOME-Autostart-enabled=true
