@@ -25,7 +25,7 @@ A lightweight, Windows 11-style clipboard history manager for Linux.
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/linux-clipboard-manager.git
+git clone https://github.com/Jalalkhan96/Linux-Clipboard-Manager.git
 cd linux-clipboard-manager
 
 # Run the setup script
