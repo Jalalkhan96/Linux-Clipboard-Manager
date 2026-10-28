@@ -1,6 +1,8 @@
 from collections import deque
 from typing import List, Optional
+import json
 import threading
+
 
 class ClipboardStorage:
     """
@@ -23,7 +25,7 @@ class ClipboardStorage:
         """
         if not item or not isinstance(item, str):
             return
-        
+
         # Check if this item should be skipped
         if item in self.skip_items:
             self.skip_items.discard(item)  # Remove from skip list
@@ -59,6 +61,25 @@ class ClipboardStorage:
         if 0 <= index < len(rev_hist):
             return rev_hist[index]
         return None
+
+    def search(self, keyword: str) -> List[str]:
+        """
+        Returns history items containing `keyword` (case-insensitive),
+        most recent first. An empty keyword returns the full history.
+        """
+        if not keyword or not isinstance(keyword, str):
+            return self.get_history()
+        needle = keyword.strip().lower()
+        if not needle:
+            return self.get_history()
+        return [item for item in self.get_history() if needle in item.lower()]
+
+    def export_json(self) -> str:
+        """
+        Returns the history as a JSON array string, most recent first,
+        so it can be saved to a file or pasted elsewhere.
+        """
+        return json.dumps(self.get_history(), ensure_ascii=False, indent=2)
 
     def clear(self):
         with self.lock:
