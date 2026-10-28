@@ -97,8 +97,9 @@ class ClipboardUI:
         
         self.queue = queue.Queue()
         self.current_tab = 'clipboard'
+        self.search_query = ''
         self.is_pinned = False
-        self.pinned_items = set()
+            self.pinned_items = set()
         self.image_history = []
         self.is_visible = False
         
@@ -285,6 +286,21 @@ class ClipboardUI:
         
         # Actions
         if self.current_tab == 'clipboard':
+            # Export JSON button
+            export_btn = tk.Label(
+                header,
+                text="Export JSON",
+                bg=self.COLORS['acrylic_bg'],
+                fg=self.COLORS['accent'],
+                font=self.fonts['small'],
+                cursor='hand2',
+                padx=10,
+                pady=4
+            )
+            export_btn.pack(side=tk.RIGHT)
+            export_btn.bind("<Button-1>", lambda e: self._export_json())
+            export_btn.bind("<Enter>", lambda e: export_btn.configure(fg=self.COLORS['accent_hover']))
+            export_btn.bind("<Leave>", lambda e: export_btn.configure(fg=self.COLORS['accent']))
             # Clear all button
             clear_btn = tk.Label(
                 header,
@@ -357,8 +373,43 @@ class ClipboardUI:
         self.pinned_items.clear()
         self._build_layout()
 
-    def _build_clipboard(self, parent):
-        # Scrollable container
+    def _apply_search(self, entry):
+"""Apply the search query from the entry (Enter key) and rebuild."""
+        self.search_query = entry.get().strip()
+self._build_layout()
+
+def _export_json(self):
+    """Copy the clipboard history as JSON to the system clipboard."""
+    try:
+        pyperclip.copy(self.storage.export_json())
+        print("✓ History exported as JSON to clipboard")
+    except Exception as e:
+        print(f"Error exporting JSON: {e}")
+        
+        def _build_clipboard(self, parent):
+# Search bar
+            search_frame = tk.Frame(parent, bg=self.COLORS['surface'])
+            search_frame.pack(fill=tk.X, padx=8, pady=(0, 8))
+            search_label = tk.Label(
+                search_frame,
+                text="🔍",
+                bg=self.COLORS['surface'],
+                fg=self.COLORS['text_secondary'],
+                font=self.fonts['small']
+            )
+            search_label.pack(side=tk.LEFT, padx=(0, 4))
+            search_entry = tk.Entry(
+                search_frame,
+                bg=self.COLORS['acrylic_tint'],
+                fg=self.COLORS['text_primary'],
+                font=self.fonts['body'],
+                insertbackground=self.COLORS['text_primary'],
+                relief=tk.FLAT
+            )
+            search_entry.insert(0, self.search_query)
+            search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
+            search_entry.bind("<Return>", lambda e: self._apply_search(search_entry))
+            # Scrollable container
         canvas = tk.Canvas(parent, bg=self.COLORS['surface'], highlightthickness=0, bd=0)
         scrollbar = tk.Scrollbar(parent, orient='vertical', command=canvas.yview)
         scroll_frame = tk.Frame(canvas, bg=self.COLORS['surface'])
@@ -395,7 +446,7 @@ class ClipboardUI:
             self._create_image_card(scroll_frame, i, img_data)
         
         # Text items
-        history = self.storage.get_history()
+        history = self.storage.search(self.search_query) if self.search_query else self.storage.get_history()
         
         if not history and not self.image_history:
             self._show_empty(scroll_frame)
